@@ -7,8 +7,8 @@ CREATE DATABASE IF NOT EXISTS healspace;
 USE healspace;
 
 -- Drop tables if they exist (for clean setup)
-DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS programs;
+DROP TABLE IF EXISTS categories;
 
 -- =============================================
 -- CREATE TABLES
@@ -47,13 +47,12 @@ CREATE TABLE programs (
 -- =============================================
 
 -- Categories
-INSERT INTO categories (name, description) VALUES
-('Art Therapy', 'Creative expression through painting, drawing, and crafts', 'palette'),
-('Music Therapy', 'Healing through live music and sound experiences', 'music'),
-('Technology', 'Explore virtual reality, gaming, and digital relaxation', 'laptop'),
-('Animal Therapy', 'Comfort and joy through trained therapy animals', 'paw-print'),
-('Spiritual Care', 'Reflection, meditation, and spiritual support for all beliefs', 'sun');
-
+INSERT INTO categories (name, description, image_url) VALUES
+('Art Therapy', 'Creative expression through painting, drawing, and crafts', NULL),
+('Music Therapy', 'Healing through live music and sound experiences', NULL),
+('Technology', 'Explore virtual reality, gaming, and digital relaxation', NULL),
+('Animal Therapy', 'Comfort and joy through trained therapy animals', NULL),
+('Spiritual Care', 'Reflection, meditation, and spiritual support for all beliefs', NULL);
 
 -- Programs
 

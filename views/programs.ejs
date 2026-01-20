@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main class="container">
+    <div class="programs-list">
+        <% programs.forEach(program => { %>
+            <div class="program-card">
+                <div class="program-image">
+                    <% if (program.image_url) { %>
+                        <img src="<%= program.image_url %>" alt="<%= program.title %>">
+                    <% } else { %>
+                        <div class="program-placeholder">
+                            <span>Img</span>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="program-content">
+                    <h2><%= program.title %></h2>
+                    <p class="program-description"><%= program.description %></p>
+                    <p class="program-meta">Location: <%= program.location %></p>
+                    <p class="program-meta">Duration: <%= program.duration_mins > 0 ? program.duration_mins + ' mins' : 'Unlimited' %></p>
+                    <a href="/bookings" class="btn-booking">Booking</a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

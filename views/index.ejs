@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main class="container">
+    <div class="categories-grid">
+        <% categories.forEach(category => { %>
+            <a href="/programs/category/<%= category.id %>" class="category-card">
+                <% if (category.image_url) { %>
+                    <img src="<%= category.image_url %>" alt="<%= category.name %>">
+                <% } else { %>
+                    <div class="category-placeholder">
+                        <span>Img</span>
+                    </div>
+                <% } %>
+                <div class="category-content">
+                    <h2><%= category.name %></h2>
+                    <p><%= category.description %></p>
+                </div>
+            </a>
+        <% }) %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>
