@@ -1,0 +1,279 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; */
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+header {
+    padding: 1.5rem 0;
+    text-align: center;
+    /* border-bottom: 1px solid #ccc; */
+}
+
+header h1 {
+    margin: 0;
+}
+
+header h1 a {
+    color: #8C1515;
+    text-decoration: none;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* ============================================
+   Navigation
+   ============================================ */
+nav {
+    background-color: #f5f5f5;
+    padding: 1rem 0;
+    text-align: center;
+    border-bottom: 1px solid #E0E0E0;
+    border-top: 1px solid #E0E0E0;
+}
+
+nav a {
+    color: #333;
+    text-decoration: none;
+    margin: 0 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    /* Smooth transition for the hover/active state */
+    transition: color 0.3s ease, border-color 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+nav a:hover{
+    color: #8C1515;
+}
+
+nav a.active{
+    color: #8C1515;
+    border-bottom: 2px solid #8C1515;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+main {
+    flex: 1;
+    padding: 2rem 0;
+    /* background-color: #555; */
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    /* padding: 0 1rem; */
+    /* background-color: #0a5a5c; */
+}
+
+/* ============================================
+   Categories Grid (Home Page)
+   ============================================ */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.category-card {
+    display: block;
+    text-decoration: none;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.category-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.category-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #d4d4d4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-placeholder span {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    opacity: 0.5;
+}
+
+.category-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.3));
+}
+
+.category-content h2 {
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.category-content p {
+    color: #fff;
+    font-size: 0.9rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* ============================================
+   Programs List
+   ============================================ */
+.programs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.program-card {
+    display: flex;
+    /* border-bottom: 1px solid #ddd; */
+    /* gap: 1rem; */
+}
+
+.program-card:first-child {
+    /* border-top: 1px solid #ddd; */
+}
+
+.program-image {
+    flex: 0 0 45%;
+    max-width: 45%;
+}
+
+.program-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.program-placeholder {
+    width: 100%;
+    /* height: 200px; */
+    height: 100%;
+    background-color: #d4d4d4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.program-placeholder span {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    opacity: 0.5;
+}
+
+.program-content {
+    flex: 1;
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+}
+
+.program-content h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.program-description {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+.program-meta {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+
+.btn-booking {
+    display: inline-block;
+    background-color: #007C92;
+    color: #fff;
+    padding: 0.6rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: auto;
+    align-self: flex-end;
+    transition: background-color 0.2s;
+}
+
+.btn-booking:hover {
+    background-color: #005a6a;
+}
+
+
+/* ============================================
+   Footer
+   ============================================ */
+footer {
+    background-color: #3F3F3F;
+    color: #fff;
+    text-align: center;
+    padding: 1.25rem 0;
+    margin-top: auto;
+}
+
+footer p {
+    font-size: 0.9rem;
+    font-weight:200;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .program-card {
+        flex-direction: column;
+    }
+    
+    .program-image {
+        flex: none;
+        max-width: 100%;
+    }
+    
+    nav a {
+        margin: 0 1rem;
+    }
+}
