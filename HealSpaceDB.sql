@@ -48,11 +48,11 @@ CREATE TABLE programs (
 
 -- Categories
 INSERT INTO categories (name, description, image_url) VALUES
-('Art Therapy', 'Creative expression through painting, drawing, and crafts', NULL),
-('Music Therapy', 'Healing through live music and sound experiences', NULL),
-('Technology', 'Explore virtual reality, gaming, and digital relaxation', NULL),
-('Animal Therapy', 'Comfort and joy through trained therapy animals', NULL),
-('Spiritual Care', 'Reflection, meditation, and spiritual support for all beliefs', NULL);
+('Art Therapy', 'Creative expression through painting, drawing, and crafts', '/img/categories/art_therapy.png'),
+('Music Therapy', 'Healing through live music and sound experiences', '/img/categories/music_therapy.png'),
+('Technology', 'Explore virtual reality, gaming, and digital relaxation', '/img/categories/technology.png'),
+('Animal Therapy', 'Comfort and joy through trained therapy animals', '/img/categories/animal_therapy.png'),
+('Spiritual Care', 'Reflection, meditation, and spiritual support for all beliefs', '/img/categories/spiritual_care.png');
 
 -- Programs
 
