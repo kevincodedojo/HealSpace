@@ -73,7 +73,7 @@ INSERT INTO programs (category_id, title, description, duration_mins, location, 
 -- Technology (category_id = 3)
 INSERT INTO programs (category_id, title, description, duration_mins, location, capacity) VALUES
 (3, 'Virtual Reality Experience', 'Escape to peaceful places through immersive VR - visit beaches, forests, mountains, and world landmarks.', 45, 'Tech Room 110', 1),
-(3, 'VR Guided Meditation', 'Short calming VR session focused on breathing and relaxation. Great for stress relief.', 20, 'Tech Room 110', 1),
+(3, 'VR Guided Meditation', 'Short calming VR session focused on breathing and relaxation. Great for stress relief.', 20, 'Your Room', 1),
 (3, 'PlayStation Rental - 2 Hours', 'Rent a PlayStation console with games to play in your room. Variety of games available.', 120, 'Your Room', 1),
 (3, 'PlayStation Rental - Full Day', 'Full day PlayStation rental for extended gaming enjoyment.', 480, 'Your Room', 1),
 (3, 'Tablet Exploration', 'Borrow a tablet pre-loaded with games, books, movies, and relaxation apps.', 240, 'Your Room', 1);
@@ -89,3 +89,33 @@ INSERT INTO programs (category_id, title, description, duration_mins, location, 
 (5, 'Buddhist Meditation & Scriptures', 'Guided meditation and teaching from Buddhist traditions. Open to all experience levels.', 30, 'Meditation Room 105', 6),
 (5, 'Interfaith Chaplain Visit', 'One-on-one spiritual support for any faith or belief. Our chaplain is here to listen and support you.', 30, 'Your Room', 1),
 (5, 'Guided Meditation - Secular', 'Mindfulness meditation session with no religious content. Focus on breathing, relaxation, and present moment.', 25, 'Meditation Room 105', 10);
+
+
+-- Art Therapy Programs
+UPDATE programs SET image_url = '/img/programs/Coloring_Art_Books.png' WHERE title = 'Coloring & Art Books';
+UPDATE programs SET image_url = '/img/programs/Watercolor_Painting_Class.png' WHERE title = 'Watercolor Painting Class';
+UPDATE programs SET image_url = '/img/programs/Oil_Painting_Class.png' WHERE title = 'Oil Painting Class';
+UPDATE programs SET image_url = '/img/programs/Craft_Workshop.png' WHERE title = 'Craft Workshop';
+
+-- Music Therapy Programs
+UPDATE programs SET image_url = '/img/programs/Bedside_Guitar.png' WHERE title = 'Bedside Guitar';
+UPDATE programs SET image_url = '/img/programs/Bedside_Harp.png' WHERE title = 'Bedside Harp';
+UPDATE programs SET image_url = '/img/programs/Live_Music_in_the_Garden.png' WHERE title = 'Live Music in the Garden';
+UPDATE programs SET image_url = '/img/programs/Sound_Bath.png' WHERE title = 'Sound Bath';
+
+-- Technology Programs
+UPDATE programs SET image_url = '/img/programs/Virtual_Reality_Experience.png' WHERE title = 'Virtual Reality Experience';
+UPDATE programs SET image_url = '/img/programs/VR_Guided_Meditation.png' WHERE title = 'VR Guided Meditation';
+UPDATE programs SET image_url = '/img/programs/PlayStation_Rental_2_Hours.png' WHERE title = 'PlayStation Rental - 2 Hours';
+UPDATE programs SET image_url = '/img/programs/PlayStation_Rental_Full_Day.png' WHERE title = 'PlayStation Rental - Full Day';
+UPDATE programs SET image_url = '/img/programs/Tablet_Exploration.png' WHERE title = 'Tablet Exploration';
+
+-- Animal Therapy Programs
+UPDATE programs SET image_url = '/img/programs/Dog_Therapy_Visit.png' WHERE title = 'Dog Therapy Visit';
+UPDATE programs SET image_url = '/img/programs/Pet_Therapy_Small_Animals.png' WHERE title = 'Pet Therapy - Small Animals';
+
+-- Spiritual Care Programs
+UPDATE programs SET image_url = '/img/programs/Bible_Reading_Reflection.png' WHERE title = 'Bible Reading & Reflection';
+UPDATE programs SET image_url = '/img/programs/Buddhist_Meditation_Scriptures.png' WHERE title = 'Buddhist Meditation & Scriptures';
+UPDATE programs SET image_url = '/img/programs/Interfaith_Chaplain_Visit.png' WHERE title = 'Interfaith Chaplain Visit';
+UPDATE programs SET image_url = '/img/programs/Guided_Meditation_Secular.png' WHERE title = 'Guided Meditation - Secular';
