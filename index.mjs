@@ -87,6 +87,28 @@ app.get('/bookings', (req, res) => {
     res.render('bookings');
 });
 
+// Login Page
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+//login route
+app.post('/login',async(req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+
+    let passwordHash = "$2a$10$06ofFgXJ9wysAOzQh0D0..RcDp1w/urY3qhO6VuUJL2c6tzAJPfj6"
+    const match = await bcrypt.compare(password, passwordHash
+
+    )
+    if(password == "secret"){
+        res.render('welcome')
+    }else {
+        res.redirect("/");
+    }
+
+});
+
 
 
 

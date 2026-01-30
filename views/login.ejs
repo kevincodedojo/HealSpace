@@ -1,0 +1,20 @@
+<%- include('partials/header.ejs') %>
+<%- include('partials/nav.ejs') %>
+
+<main>
+    <div class="container">
+        <div class="login-box">
+            <form action="/login" method="POST">
+                Username:
+                <input type="text" name="username"> <br>
+
+                Password:
+                <input type="password" name="password"> <br>
+
+                <button>Login</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer.ejs') %>
