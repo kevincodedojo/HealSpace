@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
 
 
 const app = express();
@@ -93,20 +94,41 @@ app.get('/login', (req, res) => {
 });
 
 //login route
-app.post('/login',async(req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+app.post('/login', async (req, res) => {
+    // 1. Get data from request
+    const email = req.body.email;
+    const password = req.body.password;
 
-    let passwordHash = "$2a$10$06ofFgXJ9wysAOzQh0D0..RcDp1w/urY3qhO6VuUJL2c6tzAJPfj6"
-    const match = await bcrypt.compare(password, passwordHash
+    try {
+        // 2. Look for the user in the database
+        const sql = `SELECT * FROM users WHERE email = ?`;
+        const [rows] = await pool.query(sql, [email]);
 
-    )
-    if(password == "secret"){
-        res.render('welcome')
-    }else {
-        res.redirect("/");
+        // 3. Check if user exists
+        if (rows.length === 0) {
+            // No user found with that email
+            return res.redirect("/login?error=usernotfound");
+        }
+
+        // 4. User exists, now get the hash from the database
+        const passwordHash = rows[0].password_hash;
+
+        // 5. Compare the provided password with the stored hash
+        // This will now only run if passwordHash is NOT empty
+        const match = await bcrypt.compare(password, passwordHash);
+
+        if (match) {
+            // Success!
+            res.render('welcome');
+        } else {
+            // Password didn't match
+            res.redirect("/login?error=invalidpassword");
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
     }
-
 });
 
 

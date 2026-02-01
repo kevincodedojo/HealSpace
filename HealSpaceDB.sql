@@ -39,6 +39,20 @@ CREATE TABLE programs (
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
+-- Users (Patients and Staff)
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    birthday DATE,
+    role ENUM('patient', 'admin') DEFAULT 'patient',
+    room_number VARCHAR(20),
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 
 
@@ -119,3 +133,26 @@ UPDATE programs SET image_url = '/img/programs/Bible_Reading_Reflection.png' WHE
 UPDATE programs SET image_url = '/img/programs/Buddhist_Meditation_Scriptures.png' WHERE title = 'Buddhist Meditation & Scriptures';
 UPDATE programs SET image_url = '/img/programs/Interfaith_Chaplain_Visit.png' WHERE title = 'Interfaith Chaplain Visit';
 UPDATE programs SET image_url = '/img/programs/Guided_Meditation_Secular.png' WHERE title = 'Guided Meditation - Secular';
+
+
+-- Insert a patient
+INSERT INTO users (email, password_hash, first_name, last_name, birthday, room_number, phone) 
+VALUES (
+    'john.smith@email.com',
+    '$2b$10$hashedpasswordhere',
+    'John',
+    'Smith',
+    '1985-06-20',
+    '302A',
+    '555-123-4567'
+);
+
+-- Insert an admin (no room number or birthday needed)
+INSERT INTO users (email, password_hash, first_name, last_name, role) 
+VALUES (
+    'admin@healspace.com',
+    '$2b$10$hashedpasswordhere',
+    'Sarah',
+    'Johnson',
+    'admin'
+);
