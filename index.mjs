@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from 'express';
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
+import session from "express-session";
 
 
 const app = express();
@@ -20,6 +21,14 @@ database: process.env.DB_NAME || "healspace",
 connectionLimit: 10,
 waitForConnections: true
 });
+
+//session setting
+app.set('trust proxy', 1);
+app.use(session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true
+}))
 
 // ============================================
 // ROUTES
@@ -119,6 +128,7 @@ app.post('/login', async (req, res) => {
 
         if (match) {
             // Success!
+            req.session.authenticated = true;
             res.render('welcome');
         } else {
             // Password didn't match
@@ -131,6 +141,24 @@ app.post('/login', async (req, res) => {
     }
 });
 
+//myProfile route
+app.get('/myProfile', isAuthenticated ,(req, res) => {
+    if(req.session.authenticated){
+        res.render("profile")
+    }else{
+        res.redirect("/");
+    }
+    
+})
+
+//Authentication function for login
+function isAuthenticated(req,res,next) {
+    if (!req.session.authenticated) {
+        return res.redirect("/");
+    } else {
+        next();
+    }
+}
 
 
 
