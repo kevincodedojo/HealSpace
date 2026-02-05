@@ -160,6 +160,12 @@ function isAuthenticated(req,res,next) {
     }
 }
 
+//logging out
+app.get('/logout', isAuthenticated,(req, res) => {
+    req.session.destroy();
+    res.redirect("/");
+});
+
 
 
 // Database Test
