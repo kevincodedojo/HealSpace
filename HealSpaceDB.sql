@@ -55,6 +55,34 @@ CREATE TABLE users (
 
 
 
+-- Time Slots (When programs are offered)
+CREATE TABLE time_slots (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    program_id INT NOT NULL,
+    date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    spots_available INT NOT NULL,
+    is_cancelled BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
+);
+
+-- Bookings (Patient reservations)
+CREATE TABLE bookings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    time_slot_id INT NOT NULL,
+    status ENUM('booked', 'cancelled', 'completed') DEFAULT 'booked',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    cancelled_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (time_slot_id) REFERENCES time_slots(id) ON DELETE CASCADE
+);
+
+
+
 
 -- =============================================
 -- SAMPLE DATA
@@ -146,6 +174,20 @@ VALUES (
     '302A',
     '555-123-4567'
 );
+
+-- All passwords are: password123
+INSERT INTO users (email, password_hash, first_name, last_name, birthday, room_number, phone, role) VALUES
+('john.smith@email.com', '$2b$10$YOUR_HASH_HERE', 'John', 'Smith', '1985-06-20', '302A', '555-123-4567', 'patient'),
+('maria.garcia@email.com', '$2b$10$YOUR_HASH_HERE', 'Maria', 'Garcia', '1990-03-15', '415B', '555-234-5678', 'patient'),
+('david.lee@email.com', '$2b$10$YOUR_HASH_HERE', 'David', 'Lee', '1978-11-08', '210C', '555-345-6789', 'patient'),
+('sarah.johnson@email.com', '$2b$10$YOUR_HASH_HERE', 'Sarah', 'Johnson', '1995-07-22', '508A', '555-456-7890', 'patient'),
+('michael.brown@email.com', '$2b$10$YOUR_HASH_HERE', 'Michael', 'Brown', '1982-01-30', '103B', '555-567-8901', 'patient'),
+('emily.davis@email.com', '$2b$10$YOUR_HASH_HERE', 'Emily', 'Davis', '1988-09-12', '607C', '555-678-9012', 'patient'),
+('james.wilson@email.com', '$2b$10$YOUR_HASH_HERE', 'James', 'Wilson', '1972-04-05', '401A', '555-789-0123', 'patient'),
+('lisa.martinez@email.com', '$2b$10$YOUR_HASH_HERE', 'Lisa', 'Martinez', '1998-12-18', '205B', '555-890-1234', 'patient'),
+('robert.taylor@email.com', '$2b$10$YOUR_HASH_HERE', 'Robert', 'Taylor', '1965-08-25', '312C', '555-901-2345', 'patient'),
+('jennifer.anderson@email.com', '$2b$10$YOUR_HASH_HERE', 'Jennifer', 'Anderson', '1992-02-14', '509A', '555-012-3456', 'patient'),
+('admin@healspace.com', '$2b$10$YOUR_HASH_HERE', 'Admin', 'User', NULL, NULL, '555-000-0000', 'admin');
 
 -- Insert an admin (no room number or birthday needed)
 INSERT INTO users (email, password_hash, first_name, last_name, role) 

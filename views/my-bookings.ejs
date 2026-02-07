@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main class="container">
+    <div class="page-header">
+        <h2>My Bookings</h2>
+        <p>Welcome, <%= user.first_name %>!</p>
+    </div>
+    
+    <% if (bookings.length > 0) { %>
+        <div class="bookings-list">
+            <% bookings.forEach(booking => { %>
+                <div class="booking-card">
+                    <div class="booking-info">
+                        <h3><%= booking.program_title %></h3>
+                        <p class="booking-meta">
+                            <span>📅 <%= new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %></span>
+                            <span>⏱ <%= booking.start_time %> - <%= booking.end_time %></span>
+                        </p>
+                        <p class="booking-location">📍 <%= booking.location %></p>
+                    </div>
+                    <div class="booking-status">
+                        <span class="status-badge status-<%= booking.status %>"><%= booking.status %></span>
+                        <% if (booking.status === 'booked') { %>
+                            <form action="/cancel-booking/<%= booking.id %>" method="POST" class="cancel-form">
+                                <button type="submit" class="btn-cancel">Cancel</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <h3>No bookings yet</h3>
+            <p>You haven't booked any programs yet.</p>
+            <a href="/programs" class="btn-primary">Browse Programs</a>
+        </div>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %>

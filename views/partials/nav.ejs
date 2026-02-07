@@ -1,8 +1,15 @@
 <nav>
     <a href="/">Categories</a>
     <a href="/programs">Programs</a>
-    <a href="/bookings">Bookings</a>
-    <a href="/myProfile">MyProfile</a>
-    <a href="/login">Login</a>
     
+    <% if (user) { %>
+        <!-- Logged in -->
+        <a href="/my-bookings">My Bookings</a>
+        <a href="/my-profile">My Profile</a>
+        <a href="/logout">Logout</a>
+    <% } else { %>
+        <!-- Not logged in -->
+        <a href="/bookings">Bookings</a>
+        <a href="/login">Login</a>
+    <% } %>
 </nav>
