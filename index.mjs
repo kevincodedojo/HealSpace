@@ -265,19 +265,8 @@ app.get('/register', (req, res) => {
 
 
 // Register Submit
-app.post('/register', async (req, res) => {
-    // DEBUG - See what's coming from the form
-    console.log("Form data received:", req.body);
-    
+app.post('/register', async (req, res) => {    
     const { first_name, last_name, email, birthday, room_number, password, password_confirm } = req.body;
-
-    // DEBUG - See individual values
-    console.log("first_name:", first_name);
-    console.log("last_name:", last_name);
-    console.log("email:", email);
-    console.log("birthday:", birthday, "| Type:", typeof birthday);
-    console.log("room_number:", room_number);
-    console.log("password:", password ? "exists" : "MISSING");
 
     try {
         if (password !== password_confirm) {
@@ -302,7 +291,8 @@ app.post('/register', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?)
         `, [email, password_hash, first_name, last_name, birthdayValue, roomValue]);
 
-        res.redirect('/login');
+        // Redirect to success page instead of login
+        res.redirect('/register-success');
 
     } catch (err) {
         console.error("Registration error:", err.message);
@@ -388,7 +378,13 @@ app.get('/my-bookings', isAuthenticated, async (req, res) => {
         
         res.render('my-bookings', { bookings });
     } catch (err) {
-        console.error("Database error:", err);
+        console.error("Bookings error:", err.message);
+        
+        // If tables don't exist, just show empty bookings
+        if (err.code === 'ER_NO_SUCH_TABLE') {
+            return res.render('my-bookings', { bookings: [] });
+        }
+        
         res.status(500).send("Database error");
     }
 });
