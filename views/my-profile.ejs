@@ -5,6 +5,23 @@
     <div class="page-header">
         <h2>My Profile</h2>
     </div>
+
+        <!-- Toast Notification -->
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="toast toast-success" id="toast">
+            <span class="toast-icon">✓</span>
+            <span><%= success %></span>
+            <button class="toast-close" onclick="closeToast()">×</button>
+        </div>
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="toast toast-error" id="toast">
+            <span class="toast-icon">!</span>
+            <span><%= error %></span>
+            <button class="toast-close" onclick="closeToast()">×</button>
+        </div>
+    <% } %>
     
     <div class="profile-card">
         <form action="/my-profile" method="POST">
@@ -53,5 +70,7 @@
         <p><strong>Member since:</strong> <%= new Date(profile.created_at).toLocaleDateString() %></p>
     </div>
 </main>
+
+
 
 <%- include('partials/footer') %>

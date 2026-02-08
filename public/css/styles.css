@@ -628,9 +628,85 @@ footer p {
 }
 
 /* ============================================
+   Toast Notification
+   ============================================ */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.toast-success {
+    background-color: #166534;
+}
+
+.toast-error {
+    background-color: #991b1b;
+}
+
+.toast-icon {
+    font-size: 1.25rem;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    opacity: 0.8;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Mobile toast */
+@media (max-width: 768px) {
+    .toast {
+        top: auto;
+        bottom: 20px;
+        left: 1rem;
+        right: 1rem;
+    }
+}
+
+/* ============================================
    Responsive
    ============================================ */
 @media (max-width: 768px) {
+     /* Categories */
     .categories-grid {
         grid-template-columns: 1fr;
     }
@@ -639,6 +715,8 @@ footer p {
         height: 260px; 
     }
     
+   
+    /* Programs */
     .program-card {
         flex-direction: column;
     }
@@ -654,16 +732,17 @@ footer p {
         object-fit: cover;    /* Crop image nicely */
     }
     
+    /* Navigation */
     nav a {
         margin: 0 1rem;
     }
 
-
-
+    /* Forms */
     .form-row {
         grid-template-columns: 1fr;
     }
     
+    /* Bookings */
     .booking-card {
         flex-direction: column;
         align-items: flex-start;
@@ -676,5 +755,94 @@ footer p {
     
     .info-actions {
         flex-direction: column;
+    }
+
+    /* ============================================
+       Auth Pages Mobile (Login, Register, Success)
+       ============================================ */
+    .auth-card {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .auth-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .auth-card .btn-primary {
+        width: 100%;
+    }
+
+    /* ============================================
+       Success Card Mobile
+       ============================================ */
+    .success-card {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+
+    .success-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+
+    .success-card h2 {
+        font-size: 1.4rem;
+    }
+
+    /* ============================================
+       Profile Page Mobile
+       ============================================ */
+    .profile-card {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .profile-section {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .profile-card .btn-primary {
+        width: 100%;
+    }
+
+    /* ============================================
+       Info Card Mobile (Bookings guest page)
+       ============================================ */
+    .info-card {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+
+       /* ============================================
+       Empty State Mobile
+       ============================================ */
+    .empty-state {
+        margin: 1rem;
+        padding: 2rem 1rem;
+    }
+
+    /* ============================================
+       Page Header Mobile
+       ============================================ */
+    .page-header {
+        padding: 0 1rem;
+    }
+
+    /* ============================================
+       Toast Mobile
+       ============================================ */
+    .toast {
+        top: auto;
+        bottom: 20px;
+        left: 1rem;
+        right: 1rem;
     }
 }

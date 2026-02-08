@@ -264,8 +264,8 @@ app.get('/register', (req, res) => {
 // });
 
 
-// Register Submit
-app.post('/register', async (req, res) => {    
+// Register Submit - redirect to success page
+app.post('/register', async (req, res) => {
     const { first_name, last_name, email, birthday, room_number, password, password_confirm } = req.body;
 
     try {
@@ -280,11 +280,8 @@ app.post('/register', async (req, res) => {
 
         const password_hash = await bcrypt.hash(password, 10);
 
-        // Convert empty strings to null
         const birthdayValue = birthday && birthday.trim() !== '' ? birthday : null;
         const roomValue = room_number && room_number.trim() !== '' ? room_number : null;
-
-        console.log("Inserting with birthday:", birthdayValue);
 
         await pool.query(`
             INSERT INTO users (email, password_hash, first_name, last_name, birthday, room_number)
@@ -300,27 +297,55 @@ app.post('/register', async (req, res) => {
     }
 });
 
+// Registration Success Page
+app.get('/register-success', (req, res) => {
+    res.render('register-success');
+});
 
-// Update Profile
+
+// My Profile - GET
+app.get('/my-profile', isAuthenticated, async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const [users] = await pool.query("SELECT * FROM users WHERE id = ?", [userId]);
+        
+        // Get success/error from query params
+        const success = req.query.success || null;
+        const error = req.query.error || null;
+        
+        res.render('my-profile', { profile: users[0], success, error });
+    } catch (err) {
+        console.error("Profile error:", err);
+        res.status(500).send("Database error");
+    }
+});
+
+// My Profile - POST (Update)
 app.post('/my-profile', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user.id;
         const { first_name, last_name, birthday, room_number, phone } = req.body;
         
+        const birthdayValue = birthday && birthday.trim() !== '' ? birthday : null;
+        const roomValue = room_number && room_number.trim() !== '' ? room_number : null;
+        const phoneValue = phone && phone.trim() !== '' ? phone : null;
+        
         await pool.query(`
             UPDATE users 
             SET first_name = ?, last_name = ?, birthday = ?, room_number = ?, phone = ?
             WHERE id = ?
-        `, [first_name, last_name, birthday || null, room_number || null, phone || null, userId]);
+        `, [first_name, last_name, birthdayValue, roomValue, phoneValue, userId]);
         
-        // Update session with new name
+        // Update session
         req.session.user.first_name = first_name;
         req.session.user.last_name = last_name;
         
-        res.redirect('/my-profile');
+        // Redirect with success message
+        res.redirect('/my-profile?success=Profile updated successfully');
+        
     } catch (err) {
         console.error("Update error:", err);
-        res.status(500).send("Update failed");
+        res.redirect('/my-profile?error=Failed to update profile');
     }
 });
 
