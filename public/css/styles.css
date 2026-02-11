@@ -80,6 +80,9 @@ main {
     margin: 0 auto;
     /* padding: 0 1rem; */
     /* background-color: #0a5a5c; */
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
 }
 
 /* ============================================
@@ -267,7 +270,7 @@ footer p {
    Auth Pages (Login/Register)
    ============================================ */
 .auth-card {
-    max-width: 450px;
+    max-width: 500px;
     margin: 2rem auto;
     background: #fff;
     border: 1px solid #ddd;
@@ -415,7 +418,7 @@ footer p {
    Page Headers
    ============================================ */
 .page-header {
-    margin-bottom: 2rem;
+    margin: 2rem 0;
 }
 
 .page-header h2 {
@@ -553,16 +556,17 @@ footer p {
    Profile Page
    ============================================ */
 .profile-card {
-    max-width: 600px;
+    /* max-width: 600px; */
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 2rem;
     margin-bottom: 2rem;
+    /* margin: 2rem auto; */
 }
 
 .profile-section {
-    max-width: 600px;
+    /* max-width: 600px; */
     background: #f9f9f9;
     border-radius: 8px;
     padding: 1.5rem;
@@ -583,7 +587,7 @@ footer p {
    Success Card (Registration Success)
    ============================================ */
 .success-card {
-    max-width: 450px;
+    /* max-width: 450px; */
     margin: 3rem auto;
     text-align: center;
     background: #fff;
@@ -760,9 +764,13 @@ footer p {
     /* ============================================
        Auth Pages Mobile (Login, Register, Success)
        ============================================ */
+    .container {
+    max-width: 100%;
+  }
+
     .auth-card {
         max-width: 100%;
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 1.5rem;
     }
 
@@ -779,7 +787,7 @@ footer p {
        ============================================ */
     .success-card {
         max-width: 100%;
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 2rem 1.5rem;
     }
 
@@ -798,13 +806,13 @@ footer p {
        ============================================ */
     .profile-card {
         max-width: 100%;
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 1.5rem;
     }
 
     .profile-section {
         max-width: 100%;
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 1rem;
     }
 
@@ -817,7 +825,7 @@ footer p {
        ============================================ */
     .info-card {
         max-width: 100%;
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 2rem 1.5rem;
     }
 
@@ -825,7 +833,7 @@ footer p {
        Empty State Mobile
        ============================================ */
     .empty-state {
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 2rem 1rem;
     }
 
