@@ -1,15 +1,27 @@
 <nav>
-    <a href="/">Categories</a>
-    <a href="/programs">Programs</a>
-    
-    <% if (user) { %>
-        <!-- Logged in -->
-        <a href="/my-bookings">My Bookings</a>
-        <a href="/my-profile">My Profile</a>
-        <a href="/logout">Logout</a>
-    <% } else { %>
-        <!-- Not logged in -->
-        <a href="/bookings">Bookings</a>
-        <a href="/login">Login</a>
-    <% } %>
+    <div class="nav-container">
+        <!-- Hamburger Button (mobile only) -->
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        
+        <!-- Navigation Links -->
+        <div class="nav-links" id="navLinks">
+            <a href="/">Categories</a>
+            <a href="/programs">Programs</a>
+            
+            <% if (user) { %>
+                <!-- Logged in -->
+                <a href="/my-bookings">My Bookings</a>
+                <a href="/my-profile">My Profile</a>
+                <a href="/logout">Logout</a>
+            <% } else { %>
+                <!-- Not logged in -->
+                <a href="/bookings">Bookings</a>
+                <a href="/login">Login</a>
+            <% } %>
+        </div>
+    </div>
 </nav>

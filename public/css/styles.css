@@ -37,7 +37,7 @@ header h1 a {
 /* ============================================
    Navigation
    ============================================ */
-nav {
+/* nav {
     background-color: #f5f5f5;
     padding: 1rem 0;
     text-align: center;
@@ -52,7 +52,7 @@ nav a {
     font-size: 1rem;
     font-weight: 500;
     padding-bottom: 0.25rem;
-    /* Smooth transition for the hover/active state */
+    
     transition: color 0.3s ease, border-color 0.3s ease;
     border-bottom: 2px solid transparent;
 }
@@ -64,6 +64,67 @@ nav a:hover{
 nav a.active{
     color: #8C1515;
     border-bottom: 2px solid #8C1515;
+} */
+
+/* ============================================
+   Navigation
+   ============================================ */
+nav {
+    background-color: #f5f5f5;
+    padding: 1rem 0;
+    border-bottom: 1px solid #E0E0E0;
+    border-top: 1px solid #E0E0E0;
+}
+
+.nav-container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-links a:hover {
+    color: #8C1515;
+}
+
+.nav-links a.active {
+    color: #8C1515;
+    border-bottom: 2px solid #8C1515;
+}
+
+/* Hamburger Button - Hidden on desktop */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: all 0.3s ease;
 }
 
 /* ============================================
@@ -81,7 +142,6 @@ main {
     /* padding: 0 1rem; */
     /* background-color: #0a5a5c; */
     width: 100%;
-    margin: 0 auto;
     padding: 0 16px;
 }
 
@@ -161,12 +221,11 @@ main {
 
 .program-card {
     display: flex;
-    /* border-bottom: 1px solid #ddd;
-    border-top: 1px solid #ddd; */
-    /* border: 1px solid #ddd; */
-    /* gap: 1rem; */
-    /* height: 200px;
-    border-radius: 10px; */
+    border-radius: 4px;
+    overflow: hidden;
+
+    background: #fff;
+    border: 1px solid #ddd;
 }
 
 .program-card:first-child {
@@ -710,17 +769,85 @@ footer p {
    Responsive
    ============================================ */
 @media (max-width: 768px) {
+    /* ============================================
+       Header Mobile
+    ============================================ */
+    header {
+        padding: 1rem 0;
+    }
+
+    header h1 a {
+        font-size: 1.5rem;
+    }
+
+    /* ============================================
+       Main Content Mobile
+    ============================================ */
+        main {
+        padding: 1rem 0;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
      /* Categories */
     .categories-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 0;
     }
 
-    .category-card img{
-        height: 260px; 
+    .category-card {
+        min-height: 150px;
+    }
+
+    .category-card img {
+        height: 180px;
+    }
+
+    .category-placeholder {
+        height: 150px;
+    }
+
+    .category-placeholder span {
+        font-size: 2rem;
+    }
+
+    .category-content {
+        padding: 1rem;
+    }
+
+    .category-content h2 {
+        font-size: 1.35rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .category-content p {
+        font-size: 0.8rem;
     }
     
    
     /* Programs */
+    /* .program-card {
+        flex-direction: column;
+    }
+    
+    .program-image {
+        flex: none;
+        max-width: 100%;
+    }
+
+    .program-image img,
+    .program-placeholder {
+        height: 240px;        
+        object-fit: cover;    
+    } */
+
+    .programs-list {
+        gap: 0.75rem;
+    }
+
     .program-card {
         flex-direction: column;
     }
@@ -732,8 +859,35 @@ footer p {
 
     .program-image img,
     .program-placeholder {
-        height: 240px;        /* Match the container */
-        object-fit: cover;    /* Crop image nicely */
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .program-placeholder span {
+        font-size: 2rem;
+    }
+
+    .program-content {
+        padding: 1rem;
+    }
+
+    .program-content h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .program-description {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .program-meta {
+        font-size: 0.8rem;
+    }
+
+    .btn-booking {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
     }
     
     /* Navigation */
@@ -852,5 +1006,81 @@ footer p {
         bottom: 20px;
         left: 1rem;
         right: 1rem;
+    }
+}
+
+
+/* ============================================
+   Mobile Navigation
+   ============================================ */
+@media (max-width: 768px) {
+    .nav-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 1rem;
+    }
+
+    /* Show hamburger on mobile */
+    .hamburger {
+        display: block;
+    }
+
+    /* Hidden menu by default */
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #f5f5f5;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        border-bottom: 1px solid #E0E0E0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    /* Show menu when active */
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links a {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #E0E0E0;
+        text-align: left;
+    }
+
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+
+    .nav-links a.active {
+        background-color: #fff;
+        border-bottom: 1px solid #E0E0E0;
+        border-left: 3px solid #8C1515;
+    }
+
+    /* Make nav position relative for dropdown */
+    nav {
+        position: relative;
+        padding: 0;
+    }
+
+    /* ============================================
+       Hamburger Animation (3 lines → X)
+       ============================================ */
+    .hamburger.active .hamburger-line:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 6px);
+    }
+
+    .hamburger.active .hamburger-line:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active .hamburger-line:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -6px);
     }
 }
