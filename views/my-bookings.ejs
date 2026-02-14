@@ -25,6 +25,16 @@
 
     <% if (bookings.length > 0) { %>
         <%
+            function fmtTime(t) {
+                const parts = t.split(':');
+                let h = parseInt(parts[0]);
+                const m = parts[1];
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                if (h > 12) h -= 12;
+                if (h === 0) h = 12;
+                return h + ':' + m + ' ' + ampm;
+            }
+
             const now = new Date();
             const upcoming = bookings.filter(b => {
                 const bDate = new Date(b.date);
@@ -45,19 +55,7 @@
                             <h3><%= booking.program_title %></h3>
                             <p class="booking-meta">
                                 <span>&#128197; <%= new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %></span>
-                                <span>&#9202;
-                                    <%
-                                        function fmtTime(t) {
-                                            const parts = t.split(':');
-                                            let h = parseInt(parts[0]);
-                                            const m = parts[1];
-                                            const ampm = h >= 12 ? 'PM' : 'AM';
-                                            if (h > 12) h -= 12;
-                                            if (h === 0) h = 12;
-                                            return h + ':' + m + ' ' + ampm;
-                                        }
-                                    %>
-                                    <%= fmtTime(booking.start_time) %> - <%= fmtTime(booking.end_time) %>
+                                <span>&#9202; <%= fmtTime(booking.start_time) %> - <%= fmtTime(booking.end_time) %>
                                 </span>
                             </p>
                             <p class="booking-location">&#128205; <%= booking.location %></p>
