@@ -1,0 +1,312 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main class="container">
+    <!-- Toast notifications -->
+    <% if (success) { %>
+        <div class="toast toast-success" id="toast">
+            <span class="toast-icon">&#10003;</span>
+            <span><%= success %></span>
+            <button class="toast-close" onclick="closeToast()">&times;</button>
+        </div>
+    <% } %>
+    <% if (error) { %>
+        <div class="toast toast-error" id="toast">
+            <span class="toast-icon">!</span>
+            <span><%= error %></span>
+            <button class="toast-close" onclick="closeToast()">&times;</button>
+        </div>
+    <% } %>
+
+    <!-- Program Info Header -->
+    <div class="book-header">
+        <a href="/programs" class="back-link">&larr; Back to Programs</a>
+        <div class="book-program-info">
+            <% if (program.image_url) { %>
+                <img src="<%= program.image_url %>" alt="<%= program.title %>" class="book-program-img">
+            <% } %>
+            <div>
+                <h2><%= program.title %></h2>
+                <p class="book-meta"><%= program.category_name %></p>
+                <p class="book-meta">&#128205; <%= program.location %></p>
+                <p class="book-meta">&#9202; <%= program.duration_mins > 0 ? program.duration_mins + ' mins' : 'Flexible' %></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Info -->
+    <div class="schedule-info">
+        <h3>Available Days</h3>
+        <div class="schedule-tags">
+            <% const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; %>
+            <% schedules.forEach(s => { %>
+                <span class="schedule-tag">
+                    <%= dayNames[s.day_of_week] %>
+                    <span class="schedule-time">
+                        <%= s.start_time.substring(0, 5) %> - <%= s.end_time.substring(0, 5) %>
+                    </span>
+                </span>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="booking-section">
+        <h3>1. Choose a Date</h3>
+        <div class="calendar-wrapper">
+            <div class="calendar-nav">
+                <button type="button" id="calPrev" class="cal-nav-btn">&lsaquo;</button>
+                <span id="calMonthYear" class="cal-month-year"></span>
+                <button type="button" id="calNext" class="cal-nav-btn">&rsaquo;</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="cal-header">Sun</div>
+                <div class="cal-header">Mon</div>
+                <div class="cal-header">Tue</div>
+                <div class="cal-header">Wed</div>
+                <div class="cal-header">Thu</div>
+                <div class="cal-header">Fri</div>
+                <div class="cal-header">Sat</div>
+            </div>
+            <div class="calendar-days" id="calendarDays">
+                <!-- Days will be rendered by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Slots Section -->
+    <div class="booking-section" id="timeSlotsSection" style="display: none;">
+        <h3>2. Choose a Time <span id="selectedDateDisplay" class="selected-date-label"></span></h3>
+        <div class="time-slots-grid" id="timeSlotsGrid">
+            <!-- Time slots loaded via AJAX -->
+        </div>
+    </div>
+
+    <!-- Confirm Section -->
+    <div class="booking-section" id="confirmSection" style="display: none;">
+        <h3>3. Confirm Your Booking</h3>
+        <div class="confirm-card">
+            <div class="confirm-details">
+                <p><strong><%= program.title %></strong></p>
+                <p id="confirmDate"></p>
+                <p id="confirmTime"></p>
+                <p>&#128205; <%= program.location %></p>
+            </div>
+            <form action="/book" method="POST" id="bookingForm">
+                <input type="hidden" name="program_id" value="<%= program.id %>">
+                <input type="hidden" name="time_slot_id" id="selectedSlotId" value="">
+                <button type="submit" class="btn-primary btn-confirm-booking">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+// ============================================
+// Calendar & Booking Logic
+// ============================================
+(function() {
+    const programId = <%= program.id %>;
+    const availableDates = <%- JSON.stringify(availableDates) %>;
+
+    // Calendar state
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let selectedDate = null;
+    let selectedSlotId = null;
+
+    // Max date = today + 21 days
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 21);
+
+    // Elements
+    const calendarDays = document.getElementById('calendarDays');
+    const calMonthYear = document.getElementById('calMonthYear');
+    const calPrev = document.getElementById('calPrev');
+    const calNext = document.getElementById('calNext');
+    const timeSlotsSection = document.getElementById('timeSlotsSection');
+    const timeSlotsGrid = document.getElementById('timeSlotsGrid');
+    const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+    const confirmSection = document.getElementById('confirmSection');
+    const confirmDate = document.getElementById('confirmDate');
+    const confirmTime = document.getElementById('confirmTime');
+    const selectedSlotInput = document.getElementById('selectedSlotId');
+
+    function formatDateStr(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function formatDisplayDate(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatTime(timeStr) {
+        // timeStr like "10:00:00" → "10:00 AM"
+        const parts = timeStr.split(':');
+        let h = parseInt(parts[0]);
+        const m = parts[1];
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+        return `${h}:${m} ${ampm}`;
+    }
+
+    function renderCalendar() {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        calMonthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+        // First day of month
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        let html = '';
+
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="cal-day cal-empty"></div>';
+        }
+
+        // Days of month
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(currentYear, currentMonth, day);
+            const dateStr = formatDateStr(date);
+            const isAvailable = availableDates.includes(dateStr);
+            const isPast = date < today;
+            const isBeyond = date > maxDate;
+            const isSelected = selectedDate === dateStr;
+            const isToday = dateStr === formatDateStr(today);
+
+            let classes = 'cal-day';
+            if (isPast || isBeyond) {
+                classes += ' cal-disabled';
+            } else if (isAvailable) {
+                classes += ' cal-available';
+                if (isSelected) classes += ' cal-selected';
+            } else {
+                classes += ' cal-unavailable';
+            }
+            if (isToday) classes += ' cal-today';
+
+            const clickable = !isPast && !isBeyond && isAvailable;
+
+            html += `<div class="${classes}" ${clickable ? `onclick="window._selectDate('${dateStr}')"` : ''}>
+                        <span class="cal-day-number">${day}</span>
+                     </div>`;
+        }
+
+        calendarDays.innerHTML = html;
+
+        // Update nav button states
+        const prevMonth = new Date(currentYear, currentMonth, 1);
+        prevMonth.setMonth(prevMonth.getMonth() - 1);
+        const prevMonthEnd = new Date(currentYear, currentMonth, 0);
+        calPrev.disabled = prevMonthEnd < today;
+
+        const nextMonthStart = new Date(currentYear, currentMonth + 1, 1);
+        calNext.disabled = nextMonthStart > maxDate;
+    }
+
+    // Select a date
+    window._selectDate = function(dateStr) {
+        selectedDate = dateStr;
+        selectedSlotId = null;
+        confirmSection.style.display = 'none';
+        renderCalendar();
+        loadTimeSlots(dateStr);
+    };
+
+    // Load time slots via AJAX
+    async function loadTimeSlots(dateStr) {
+        timeSlotsSection.style.display = 'block';
+        selectedDateDisplay.textContent = '- ' + formatDisplayDate(dateStr);
+        timeSlotsGrid.innerHTML = '<p class="loading-text">Loading available times...</p>';
+
+        try {
+            const response = await fetch(`/api/time-slots/${programId}?date=${dateStr}`);
+            const data = await response.json();
+
+            if (data.slots.length === 0) {
+                timeSlotsGrid.innerHTML = '<p class="no-slots-text">No time slots available for this date.</p>';
+                return;
+            }
+
+            let html = '';
+            data.slots.forEach(slot => {
+                const startFormatted = formatTime(slot.start_time);
+                const endFormatted = formatTime(slot.end_time);
+                const spotsText = slot.spots_available === 1
+                    ? '1 spot left'
+                    : `${slot.spots_available} spots`;
+
+                if (slot.is_available) {
+                    html += `<button type="button" class="time-slot-btn" onclick="window._selectSlot(${slot.id}, '${startFormatted}', '${endFormatted}', '${dateStr}', this)">
+                                <span class="slot-time">${startFormatted} - ${endFormatted}</span>
+                                <span class="slot-spots">${spotsText}</span>
+                             </button>`;
+                } else {
+                    html += `<button type="button" class="time-slot-btn slot-full" disabled>
+                                <span class="slot-time">${startFormatted} - ${endFormatted}</span>
+                                <span class="slot-spots">Full</span>
+                             </button>`;
+                }
+            });
+
+            timeSlotsGrid.innerHTML = html;
+        } catch (err) {
+            timeSlotsGrid.innerHTML = '<p class="error-text">Failed to load time slots. Please try again.</p>';
+        }
+
+        // Scroll to time slots
+        timeSlotsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Select a time slot
+    window._selectSlot = function(slotId, startTime, endTime, dateStr, btnElement) {
+        selectedSlotId = slotId;
+        selectedSlotInput.value = slotId;
+
+        // Update UI - highlight selected
+        document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('slot-selected'));
+        btnElement.classList.add('slot-selected');
+
+        // Show confirmation
+        confirmDate.textContent = '\u{1F4C5} ' + formatDisplayDate(dateStr);
+        confirmTime.textContent = '\u{23F0} ' + startTime + ' - ' + endTime;
+        confirmSection.style.display = 'block';
+
+        // Scroll to confirm
+        confirmSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // Calendar navigation
+    calPrev.addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    });
+
+    calNext.addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    });
+
+    // Initial render
+    renderCalendar();
+})();
+</script>
+
+<%- include('partials/footer') %>

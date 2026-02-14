@@ -766,6 +766,351 @@ footer p {
 }
 
 /* ============================================
+   Booking Page - Header
+   ============================================ */
+.back-link {
+    display: inline-block;
+    color: #007C92;
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.book-header {
+    margin-bottom: 1.5rem;
+}
+
+.book-program-info {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.book-program-img {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.book-program-info h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.book-meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.15rem;
+}
+
+/* ============================================
+   Schedule Info Tags
+   ============================================ */
+.schedule-info {
+    margin-bottom: 1.5rem;
+}
+
+.schedule-info h3 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+.schedule-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.schedule-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.schedule-time {
+    font-weight: 400;
+    color: #0369a1;
+    opacity: 0.8;
+}
+
+/* ============================================
+   Booking Sections
+   ============================================ */
+.booking-section {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.booking-section h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.selected-date-label {
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: #007C92;
+}
+
+/* ============================================
+   Calendar
+   ============================================ */
+.calendar-wrapper {
+    max-width: 420px;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.cal-nav-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.cal-nav-btn:hover:not(:disabled) {
+    background: #f5f5f5;
+}
+
+.cal-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.cal-month-year {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+}
+
+.cal-header {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666;
+    padding: 0.5rem 0;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-day {
+    position: relative;
+    text-align: center;
+    padding: 0.6rem 0.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cal-empty {
+    /* Empty placeholder cells */
+}
+
+.cal-disabled {
+    color: #ccc;
+    cursor: default;
+}
+
+.cal-unavailable {
+    color: #aaa;
+    background: #f0f0f0;
+    cursor: default;
+}
+
+.cal-available {
+    background: #007C92;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.cal-available:hover {
+    background: #005a6a;
+}
+
+.cal-selected {
+    background: #8C1515 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(140, 21, 21, 0.3);
+}
+
+.cal-today {
+    /* Add a small dot indicator for today */
+}
+
+.cal-today .cal-day-number::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    margin: 2px auto 0;
+    opacity: 0.6;
+}
+
+/* ============================================
+   Time Slots Grid
+   ============================================ */
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.6rem;
+}
+
+.time-slot-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.85rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.time-slot-btn:hover:not(:disabled) {
+    border-color: #007C92;
+    background: #f0f9fa;
+}
+
+.time-slot-btn.slot-selected {
+    border-color: #007C92;
+    background: #007C92;
+    color: #fff;
+}
+
+.time-slot-btn.slot-selected .slot-spots {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.time-slot-btn.slot-full {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: #f5f5f5;
+}
+
+.slot-time {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.slot-spots {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.loading-text,
+.no-slots-text,
+.error-text {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+    padding: 1rem;
+}
+
+.error-text {
+    color: #8C1515;
+}
+
+/* ============================================
+   Confirm Card
+   ============================================ */
+.confirm-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.confirm-details p {
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.confirm-details p strong {
+    color: #333;
+    font-size: 1.05rem;
+}
+
+.btn-confirm-booking {
+    white-space: nowrap;
+    padding: 0.85rem 2rem;
+    font-size: 1rem;
+}
+
+/* ============================================
+   Bookings Section Titles
+   ============================================ */
+.bookings-section-title {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.booking-card-past {
+    opacity: 0.6;
+}
+
+/* ============================================
    Responsive
    ============================================ */
 @media (max-width: 768px) {
@@ -989,6 +1334,45 @@ footer p {
     .empty-state {
         /* margin: 1rem; */
         padding: 2rem 1rem;
+    }
+
+        /* ============================================
+       Booking Page Mobile
+       ============================================ */
+    .book-program-info {
+        flex-direction: column;
+    }
+
+    .book-program-img {
+        width: 100%;
+        height: 160px;
+    }
+
+    .booking-section {
+        padding: 1rem;
+    }
+
+    .calendar-wrapper {
+        max-width: 100%;
+    }
+
+    .cal-day {
+        padding: 0.5rem 0.15rem;
+        font-size: 0.8rem;
+        min-height: 36px;
+    }
+
+    .time-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .confirm-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .btn-confirm-booking {
+        width: 100%;
     }
 
     /* ============================================

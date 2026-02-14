@@ -2,34 +2,100 @@
 <%- include('partials/nav') %>
 
 <main class="container">
+    <!-- Toast notifications -->
+    <% if (success) { %>
+        <div class="toast toast-success" id="toast">
+            <span class="toast-icon">&#10003;</span>
+            <span><%= success %></span>
+            <button class="toast-close" onclick="closeToast()">&times;</button>
+        </div>
+    <% } %>
+    <% if (error) { %>
+        <div class="toast toast-error" id="toast">
+            <span class="toast-icon">!</span>
+            <span><%= error %></span>
+            <button class="toast-close" onclick="closeToast()">&times;</button>
+        </div>
+    <% } %>
+
     <div class="page-header">
         <h2>My Bookings</h2>
         <p>Welcome, <%= user.first_name %>!</p>
     </div>
-    
+
     <% if (bookings.length > 0) { %>
-        <div class="bookings-list">
-            <% bookings.forEach(booking => { %>
-                <div class="booking-card">
-                    <div class="booking-info">
-                        <h3><%= booking.program_title %></h3>
-                        <p class="booking-meta">
-                            <span>📅 <%= new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %></span>
-                            <span>⏱ <%= booking.start_time %> - <%= booking.end_time %></span>
-                        </p>
-                        <p class="booking-location">📍 <%= booking.location %></p>
+        <%
+            const now = new Date();
+            const upcoming = bookings.filter(b => {
+                const bDate = new Date(b.date);
+                return b.status === 'booked' && bDate >= new Date(now.toDateString());
+            });
+            const past = bookings.filter(b => {
+                const bDate = new Date(b.date);
+                return b.status !== 'booked' || bDate < new Date(now.toDateString());
+            });
+        %>
+
+        <% if (upcoming.length > 0) { %>
+            <h3 class="bookings-section-title">Upcoming</h3>
+            <div class="bookings-list">
+                <% upcoming.forEach(booking => { %>
+                    <div class="booking-card">
+                        <div class="booking-info">
+                            <h3><%= booking.program_title %></h3>
+                            <p class="booking-meta">
+                                <span>&#128197; <%= new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %></span>
+                                <span>&#9202;
+                                    <%
+                                        function fmtTime(t) {
+                                            const parts = t.split(':');
+                                            let h = parseInt(parts[0]);
+                                            const m = parts[1];
+                                            const ampm = h >= 12 ? 'PM' : 'AM';
+                                            if (h > 12) h -= 12;
+                                            if (h === 0) h = 12;
+                                            return h + ':' + m + ' ' + ampm;
+                                        }
+                                    %>
+                                    <%= fmtTime(booking.start_time) %> - <%= fmtTime(booking.end_time) %>
+                                </span>
+                            </p>
+                            <p class="booking-location">&#128205; <%= booking.location %></p>
+                        </div>
+                        <div class="booking-status">
+                            <span class="status-badge status-<%= booking.status %>"><%= booking.status %></span>
+                            <% if (booking.status === 'booked') { %>
+                                <form action="/cancel-booking/<%= booking.id %>" method="POST" class="cancel-form"
+                                      onsubmit="return confirm('Are you sure you want to cancel this booking?')">
+                                    <button type="submit" class="btn-cancel">Cancel</button>
+                                </form>
+                            <% } %>
+                        </div>
                     </div>
-                    <div class="booking-status">
-                        <span class="status-badge status-<%= booking.status %>"><%= booking.status %></span>
-                        <% if (booking.status === 'booked') { %>
-                            <form action="/cancel-booking/<%= booking.id %>" method="POST" class="cancel-form">
-                                <button type="submit" class="btn-cancel">Cancel</button>
-                            </form>
-                        <% } %>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <% if (past.length > 0) { %>
+            <h3 class="bookings-section-title" style="margin-top: 2rem;">Past & Cancelled</h3>
+            <div class="bookings-list">
+                <% past.forEach(booking => { %>
+                    <div class="booking-card booking-card-past">
+                        <div class="booking-info">
+                            <h3><%= booking.program_title %></h3>
+                            <p class="booking-meta">
+                                <span>&#128197; <%= new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %></span>
+                                <span>&#9202; <%= fmtTime(booking.start_time) %> - <%= fmtTime(booking.end_time) %></span>
+                            </p>
+                            <p class="booking-location">&#128205; <%= booking.location %></p>
+                        </div>
+                        <div class="booking-status">
+                            <span class="status-badge status-<%= booking.status %>"><%= booking.status %></span>
+                        </div>
                     </div>
-                </div>
-            <% }) %>
-        </div>
+                <% }) %>
+            </div>
+        <% } %>
     <% } else { %>
         <div class="empty-state">
             <h3>No bookings yet</h3>

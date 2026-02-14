@@ -381,6 +381,97 @@ app.get('/logout', (req, res) => {
 //     res.redirect("/");
 // });
 
+
+// ============================================
+// TIME SLOT GENERATION (from program_schedules)
+// ============================================
+
+/**
+ * Generate time_slots for a program for the next 3 weeks
+ * based on its program_schedules entries.
+ * Skips dates that already have slots to avoid duplicates.
+ */
+async function generateTimeSlotsForProgram(programId) {
+    // Get the program's schedules
+    const [schedules] = await pool.query(
+        `SELECT ps.*, p.capacity as program_capacity
+         FROM program_schedules ps
+         JOIN programs p ON ps.program_id = p.id
+         WHERE ps.program_id = ? AND ps.is_active = TRUE`,
+        [programId]
+    );
+
+    if (schedules.length === 0) return;
+
+    // Generate for next 21 days (3 weeks) starting from tomorrow
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let dayOffset = 0; dayOffset <= 21; dayOffset++) {
+        const date = new Date(today);
+        date.setDate(date.getDate() + dayOffset);
+        const dayOfWeek = date.getDay(); // 0=Sun ... 6=Sat
+        const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        // Find schedules that match this day of week
+        const matchingSchedules = schedules.filter(s => s.day_of_week === dayOfWeek);
+
+        for (const schedule of matchingSchedules) {
+            // Check if slots already exist for this program + date
+            const [existing] = await pool.query(
+                `SELECT COUNT(*) as cnt FROM time_slots WHERE program_id = ? AND date = ?`,
+                [programId, dateStr]
+            );
+            if (existing[0].cnt > 0) continue;
+
+            // Generate individual time slots from start_time to end_time
+            const capacity = schedule.max_per_slot > 0
+                ? schedule.max_per_slot
+                : schedule.program_capacity;
+
+            const startParts = schedule.start_time.split(':');
+            const endParts = schedule.end_time.split(':');
+            let startMins = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+            const endMins = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+            const slotDuration = schedule.slot_duration_mins;
+
+            while (startMins + slotDuration <= endMins) {
+                const slotStart = `${String(Math.floor(startMins / 60)).padStart(2, '0')}:${String(startMins % 60).padStart(2, '0')}:00`;
+                const slotEndMin = startMins + slotDuration;
+                const slotEnd = `${String(Math.floor(slotEndMin / 60)).padStart(2, '0')}:${String(slotEndMin % 60).padStart(2, '0')}:00`;
+
+                await pool.query(
+                    `INSERT INTO time_slots (program_id, date, start_time, end_time, spots_available)
+                     VALUES (?, ?, ?, ?, ?)`,
+                    [programId, dateStr, slotStart, slotEnd, capacity]
+                );
+
+                startMins += slotDuration;
+            }
+        }
+    }
+}
+
+/**
+ * Generate time slots for ALL active programs
+ */
+async function generateAllTimeSlots() {
+    try {
+        const [programs] = await pool.query(
+            `SELECT DISTINCT program_id FROM program_schedules WHERE is_active = TRUE`
+        );
+        for (const p of programs) {
+            await generateTimeSlotsForProgram(p.program_id);
+        }
+        console.log(`Time slots generated for ${programs.length} programs`);
+    } catch (err) {
+        console.error("Error generating time slots:", err.message);
+    }
+}
+
+// Generate time slots on server startup
+generateAllTimeSlots();
+
 // ============================================
 // PROTECTED ROUTES (Login required)
 // ============================================
@@ -389,56 +480,230 @@ app.get('/logout', (req, res) => {
 app.get('/my-bookings', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user.id;
-        
-        // For now, just render the page (we'll add real bookings later)
+
         const [bookings] = await pool.query(`
             SELECT b.*, p.title as program_title, p.location, p.duration_mins,
+                   p.image_url as program_image,
                    ts.date, ts.start_time, ts.end_time
             FROM bookings b
             JOIN time_slots ts ON b.time_slot_id = ts.id
             JOIN programs p ON ts.program_id = p.id
             WHERE b.user_id = ?
-            ORDER BY ts.date DESC
+            ORDER BY ts.date ASC, ts.start_time ASC
         `, [userId]);
-        
-        res.render('my-bookings', { bookings });
+
+        const success = req.query.success || null;
+        const error = req.query.error || null;
+
+        res.render('my-bookings', { bookings, success, error });
     } catch (err) {
         console.error("Bookings error:", err.message);
-        
-        // If tables don't exist, just show empty bookings
+
         if (err.code === 'ER_NO_SUCH_TABLE') {
-            return res.render('my-bookings', { bookings: [] });
+            return res.render('my-bookings', { bookings: [], success: null, error: null });
         }
-        
+
         res.status(500).send("Database error");
     }
 });
 
-// My Profile
-app.get('/my-profile', isAuthenticated, async (req, res) => {
+// Cancel Booking
+app.post('/cancel-booking/:id', isAuthenticated, async (req, res) => {
+    try {
+        const bookingId = req.params.id;
+        const userId = req.session.user.id;
+
+        // Verify the booking belongs to this user and is still booked
+        const [bookings] = await pool.query(
+            `SELECT b.*, ts.spots_available, ts.id as slot_id
+             FROM bookings b
+             JOIN time_slots ts ON b.time_slot_id = ts.id
+             WHERE b.id = ? AND b.user_id = ? AND b.status = 'booked'`,
+            [bookingId, userId]
+        );
+
+        if (bookings.length === 0) {
+            return res.redirect('/my-bookings?error=Booking not found or already cancelled');
+        }
+
+        // Cancel the booking and restore the spot
+        await pool.query(
+            `UPDATE bookings SET status = 'cancelled', cancelled_at = NOW() WHERE id = ?`,
+            [bookingId]
+        );
+        await pool.query(
+            `UPDATE time_slots SET spots_available = spots_available + 1 WHERE id = ?`,
+            [bookings[0].slot_id]
+        );
+
+        res.redirect('/my-bookings?success=Booking cancelled successfully');
+    } catch (err) {
+        console.error("Cancel error:", err.message);
+        res.redirect('/my-bookings?error=Failed to cancel booking');
+    }
+});
+
+// ============================================
+// BOOKING FLOW
+// ============================================
+
+// Book a Program - Show calendar page
+app.get('/book/:programId', isAuthenticated, async (req, res) => {
+    try {
+        const programId = req.params.programId;
+
+        // Get program info
+        const [programs] = await pool.query(
+            `SELECT p.*, c.name as category_name
+             FROM programs p
+             JOIN categories c ON p.category_id = c.id
+             WHERE p.id = ? AND p.is_active = TRUE`,
+            [programId]
+        );
+
+        if (programs.length === 0) {
+            return res.status(404).send("Program not found");
+        }
+
+        const program = programs[0];
+
+        // Ensure time slots are generated
+        await generateTimeSlotsForProgram(programId);
+
+        // Get all available dates for next 3 weeks (dates that have at least one open slot)
+        const [availableDates] = await pool.query(
+            `SELECT DISTINCT date
+             FROM time_slots
+             WHERE program_id = ?
+               AND date >= CURDATE()
+               AND date <= DATE_ADD(CURDATE(), INTERVAL 21 DAY)
+               AND spots_available > 0
+               AND is_cancelled = FALSE
+             ORDER BY date`,
+            [programId]
+        );
+
+        // Get schedule info for display (which days of week this program runs)
+        const [schedules] = await pool.query(
+            `SELECT day_of_week, start_time, end_time
+             FROM program_schedules
+             WHERE program_id = ? AND is_active = TRUE
+             ORDER BY day_of_week`,
+            [programId]
+        );
+
+        const success = req.query.success || null;
+        const error = req.query.error || null;
+
+        // Format available dates as array of date strings for the calendar
+        const availableDateStrings = availableDates.map(d => {
+            const dt = new Date(d.date);
+            return dt.toISOString().split('T')[0];
+        });
+
+        res.render('book', {
+            program,
+            availableDates: availableDateStrings,
+            schedules,
+            success,
+            error
+        });
+    } catch (err) {
+        console.error("Book page error:", err.message);
+        res.status(500).send("Database error");
+    }
+});
+
+// API: Get time slots for a specific program + date (AJAX)
+app.get('/api/time-slots/:programId', async (req, res) => {
+    try {
+        const programId = req.params.programId;
+        const date = req.query.date;
+
+        if (!date) {
+            return res.status(400).json({ error: 'Date is required' });
+        }
+
+        const [slots] = await pool.query(
+            `SELECT ts.id, ts.start_time, ts.end_time, ts.spots_available
+             FROM time_slots ts
+             WHERE ts.program_id = ?
+               AND ts.date = ?
+               AND ts.is_cancelled = FALSE
+             ORDER BY ts.start_time`,
+            [programId, date]
+        );
+
+        // For each slot, also get how many are booked
+        const slotsWithInfo = slots.map(slot => ({
+            id: slot.id,
+            start_time: slot.start_time,
+            end_time: slot.end_time,
+            spots_available: slot.spots_available,
+            is_available: slot.spots_available > 0
+        }));
+
+        res.json({ slots: slotsWithInfo });
+    } catch (err) {
+        console.error("API time-slots error:", err.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Create a Booking (POST)
+app.post('/book', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user.id;
-        const [users] = await pool.query("SELECT * FROM users WHERE id = ?", [userId]);
-        res.render('my-profile', { profile: users[0] });
-    } catch (err) {
-        console.error("Database error:", err);
-        res.status(500).send("Database error");
-    }
-});
+        const { time_slot_id, program_id } = req.body;
 
-// Temporary debug route - DELETE LATER
-app.get('/test-insert', async (req, res) => {
-    try {
-        const password_hash = await bcrypt.hash('test123', 10);
-        
-        await pool.query(`
-            INSERT INTO users (email, password_hash, first_name, last_name)
-            VALUES (?, ?, ?, ?)
-        `, ['test@test.com', password_hash, 'Test', 'User']);
-        
-        res.send('✅ User created successfully!');
+        if (!time_slot_id || !program_id) {
+            return res.redirect(`/book/${program_id || ''}?error=Please select a time slot`);
+        }
+
+        // Check the slot exists and has availability
+        const [slots] = await pool.query(
+            `SELECT ts.*, p.title as program_title
+             FROM time_slots ts
+             JOIN programs p ON ts.program_id = p.id
+             WHERE ts.id = ? AND ts.program_id = ? AND ts.is_cancelled = FALSE`,
+            [time_slot_id, program_id]
+        );
+
+        if (slots.length === 0) {
+            return res.redirect(`/book/${program_id}?error=Time slot not found`);
+        }
+
+        const slot = slots[0];
+
+        if (slot.spots_available <= 0) {
+            return res.redirect(`/book/${program_id}?error=Sorry, this time slot is full`);
+        }
+
+        // Check if user already has a booking for this same slot
+        const [existingBooking] = await pool.query(
+            `SELECT id FROM bookings
+             WHERE user_id = ? AND time_slot_id = ? AND status = 'booked'`,
+            [userId, time_slot_id]
+        );
+
+        if (existingBooking.length > 0) {
+            return res.redirect(`/book/${program_id}?error=You already have a booking for this time slot`);
+        }
+
+        // Create the booking and decrement spots
+        await pool.query(
+            `INSERT INTO bookings (user_id, time_slot_id, status) VALUES (?, ?, 'booked')`,
+            [userId, time_slot_id]
+        );
+        await pool.query(
+            `UPDATE time_slots SET spots_available = spots_available - 1 WHERE id = ?`,
+            [time_slot_id]
+        );
+
+        res.redirect('/my-bookings?success=Booking confirmed!');
     } catch (err) {
-        res.send(`❌ Error: ${err.message}`);
+        console.error("Booking error:", err.message);
+        res.redirect(`/book/${req.body.program_id || ''}?error=Booking failed, please try again`);
     }
 });
 

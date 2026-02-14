@@ -20,7 +20,7 @@
                         <p class="program-description"><%= program.description %></p>
                         <p class="program-meta">Location: <%= program.location %></p>
                         <p class="program-meta">Duration: <%= program.duration_mins > 0 ? program.duration_mins + ' mins' : 'Unlimited' %></p>
-                        <a href="/bookings" class="btn-booking">Booking</a>
+                        <a href="/book/<%= program.id %>" class="btn-booking">Book Now</a>
                     </div>
                 </div>
             <% }) %>

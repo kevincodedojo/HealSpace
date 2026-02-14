@@ -55,7 +55,22 @@ CREATE TABLE users (
 
 
 
--- Time Slots (When programs are offered)
+-- Program Schedules (Recurring availability patterns)
+-- e.g., "Watercolor Painting is available Mon/Wed, 10:00-15:00"
+CREATE TABLE program_schedules (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    program_id INT NOT NULL,
+    day_of_week TINYINT NOT NULL COMMENT '0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat',
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    slot_duration_mins INT NOT NULL DEFAULT 60 COMMENT 'How long each bookable slot is',
+    max_per_slot INT NOT NULL DEFAULT 0 COMMENT 'Override capacity per slot, 0 = use program capacity',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
+);
+
+-- Time Slots (Auto-generated from schedules, one row per bookable slot)
 CREATE TABLE time_slots (
     id INT PRIMARY KEY AUTO_INCREMENT,
     program_id INT NOT NULL,
@@ -198,3 +213,126 @@ VALUES (
     'Johnson',
     'admin'
 );
+
+
+-- =============================================
+-- PROGRAM SCHEDULES (Recurring availability)
+-- day_of_week: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+-- =============================================
+
+-- Art Therapy: Coloring & Art Books (id=1) — Mon-Fri, pickup style, long window
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins, max_per_slot) VALUES
+(1, 1, '09:00', '16:00', 60, 20),
+(1, 2, '09:00', '16:00', 60, 20),
+(1, 3, '09:00', '16:00', 60, 20),
+(1, 4, '09:00', '16:00', 60, 20),
+(1, 5, '09:00', '16:00', 60, 20);
+
+-- Watercolor Painting Class (id=2) — Mon & Wed, 10am-3pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(2, 1, '10:00', '15:00', 45),
+(2, 3, '10:00', '15:00', 45);
+
+-- Oil Painting Class (id=3) — Tue & Thu, 10am-4pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(3, 2, '10:00', '16:00', 60),
+(3, 4, '10:00', '16:00', 60);
+
+-- Craft Workshop (id=4) — Wed & Fri, 1pm-4pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(4, 3, '13:00', '16:00', 45),
+(4, 5, '13:00', '16:00', 45);
+
+-- Bedside Guitar (id=5) — Mon, Wed, Fri 9am-5pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(5, 1, '09:00', '17:00', 25),
+(5, 3, '09:00', '17:00', 25),
+(5, 5, '09:00', '17:00', 25);
+
+-- Bedside Harp (id=6) — Tue & Thu 10am-4pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(6, 2, '10:00', '16:00', 25),
+(6, 4, '10:00', '16:00', 25);
+
+-- Live Music in the Garden (id=7) — Sat only, 2pm-4pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(7, 6, '14:00', '16:00', 60);
+
+-- Sound Bath (id=8) — Mon & Thu, 11am-3pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(8, 1, '11:00', '15:00', 40),
+(8, 4, '11:00', '15:00', 40);
+
+-- Virtual Reality Experience (id=9) — Mon-Fri, 10am-5pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(9, 1, '10:00', '17:00', 45),
+(9, 2, '10:00', '17:00', 45),
+(9, 3, '10:00', '17:00', 45),
+(9, 4, '10:00', '17:00', 45),
+(9, 5, '10:00', '17:00', 45);
+
+-- VR Guided Meditation (id=10) — Wed & Fri, 9am-3pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(10, 3, '09:00', '15:00', 20),
+(10, 5, '09:00', '15:00', 20);
+
+-- PlayStation Rental 2hr (id=11) — Mon-Sat, 10am-6pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(11, 1, '10:00', '18:00', 120),
+(11, 2, '10:00', '18:00', 120),
+(11, 3, '10:00', '18:00', 120),
+(11, 4, '10:00', '18:00', 120),
+(11, 5, '10:00', '18:00', 120),
+(11, 6, '10:00', '18:00', 120);
+
+-- PlayStation Rental Full Day (id=12) — Mon-Sat, 9am-5pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(12, 1, '09:00', '17:00', 480),
+(12, 2, '09:00', '17:00', 480),
+(12, 3, '09:00', '17:00', 480),
+(12, 4, '09:00', '17:00', 480),
+(12, 5, '09:00', '17:00', 480),
+(12, 6, '09:00', '17:00', 480);
+
+-- Tablet Exploration (id=13) — Mon-Fri, 9am-5pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(13, 1, '09:00', '17:00', 240),
+(13, 2, '09:00', '17:00', 240),
+(13, 3, '09:00', '17:00', 240),
+(13, 4, '09:00', '17:00', 240),
+(13, 5, '09:00', '17:00', 240);
+
+-- Dog Therapy Visit (id=14) — Tue, Thu, Sat 10am-3pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(14, 2, '10:00', '15:00', 25),
+(14, 4, '10:00', '15:00', 25),
+(14, 6, '10:00', '15:00', 25);
+
+-- Pet Therapy Small Animals (id=15) — Mon & Wed, 11am-2pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(15, 1, '11:00', '14:00', 20),
+(15, 3, '11:00', '14:00', 20);
+
+-- Bible Reading & Reflection (id=16) — Sun & Wed, 10am-12pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(16, 0, '10:00', '12:00', 30),
+(16, 3, '10:00', '12:00', 30);
+
+-- Buddhist Meditation & Scriptures (id=17) — Tue & Fri, 9am-11am
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(17, 2, '09:00', '11:00', 30),
+(17, 5, '09:00', '11:00', 30);
+
+-- Interfaith Chaplain Visit (id=18) — Mon-Fri, 10am-4pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(18, 1, '10:00', '16:00', 30),
+(18, 2, '10:00', '16:00', 30),
+(18, 3, '10:00', '16:00', 30),
+(18, 4, '10:00', '16:00', 30),
+(18, 5, '10:00', '16:00', 30);
+
+-- Guided Meditation - Secular (id=19) — Mon, Wed, Fri 10am-2pm
+INSERT INTO program_schedules (program_id, day_of_week, start_time, end_time, slot_duration_mins) VALUES
+(19, 1, '10:00', '14:00', 25),
+(19, 3, '10:00', '14:00', 25),
+(19, 5, '10:00', '14:00', 25);
