@@ -995,7 +995,16 @@ footer p {
        Page Header Mobile
        ============================================ */
     .page-header {
-        padding: 0 1rem;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .page-header p {
+        font-size: 0.9rem;
     }
 
     /* ============================================
