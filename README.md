@@ -4,6 +4,16 @@ A therapeutic program booking system for healthcare facilities. Patients can bro
 
 Built with **Node.js**, **Express**, **MySQL**, and **EJS**.
 
+## Screenshots
+
+| Home — Browse Categories | Programs Listing |
+|:---:|:---:|
+| ![Home Page](docs/screenshots/home.png) | ![Programs](docs/screenshots/programs.png) |
+
+| Booking Calendar | My Bookings |
+|:---:|:---:|
+| ![Booking](docs/screenshots/booking.png) | ![My Bookings](docs/screenshots/my-bookings.png) |
+
 ## Features
 
 - **Browse Programs** — Explore 19 therapeutic programs across 5 categories (Art Therapy, Music Therapy, Technology, Animal Therapy, Spiritual Care)
