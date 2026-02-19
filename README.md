@@ -7,7 +7,7 @@ Built with **Node.js**, **Express**, **MySQL**, and **EJS**.
 Visit https://healspace-healthcare.onrender.com/
 
 ## Screenshots
-
+### Desk
 | Home — Browse Categories | Programs Listing |
 |:---:|:---:|
 | ![Home Page](docs/screenshots/home.png) | ![Programs](docs/screenshots/programs.png) |
@@ -15,6 +15,10 @@ Visit https://healspace-healthcare.onrender.com/
 | Booking Calendar | My Bookings |
 |:---:|:---:|
 | ![Booking](docs/screenshots/booking.png) | ![My Bookings](docs/screenshots/my-bookings.png) |
+### Phone
+| Home — Browse Categories | Programs Listing | Booking Calendar | My Bookings |
+|:---:|:---:|:---:|:---:|
+| ![Home Page](docs/screenshots/p-home.png) | ![Programs](docs/screenshots/p-programs.png) | ![Booking](docs/screenshots/p-booking.png) | ![My Bookings](docs/screenshots/p-my-bookings.png) |
 
 ## Features
 
