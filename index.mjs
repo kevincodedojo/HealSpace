@@ -469,8 +469,10 @@ async function generateAllTimeSlots() {
     }
 }
 
-// Generate time slots on server startup
-generateAllTimeSlots();
+// Generate time slots on server startup (skip during testing)
+if (process.env.NODE_ENV !== 'test') {
+    generateAllTimeSlots();
+}
 
 // ============================================
 // PROTECTED ROUTES (Login required)
@@ -719,7 +721,12 @@ app.get("/dbTest", async (req, res) => {
     }
 });
 
-// Start server
-app.listen(3000, () => {
-    console.log("HealSpace server running at http://localhost:3000");
-});
+// Start server (skip during testing)
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(3000, () => {
+        console.log("HealSpace server running at http://localhost:3000");
+    });
+}
+
+// Export for testing
+export { app, pool, isAuthenticated };
