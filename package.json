@@ -1,10 +1,11 @@
 {
   "name": "healspace",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Therapeutic program booking system for healthcare facilities",
+  "main": "index.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.mjs",
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --forceExit --detectOpenHandles"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,10 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "mysql2": "^3.16.1"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
   }
 }
